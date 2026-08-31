@@ -1,0 +1,49 @@
+{
+  "currency": "INR",
+  "segments": {
+    "hatchback": {
+      "front_bumper": {"min_cost": 2500, "max_cost": 8500, "benchmark_median": 4500},
+      "rear_bumper": {"min_cost": 2500, "max_cost": 8000, "benchmark_median": 4200},
+      "headlight_assembly": {"min_cost": 1800, "max_cost": 6500, "benchmark_median": 3500},
+      "windshield_glass": {"min_cost": 3000, "max_cost": 9000, "benchmark_median": 5500},
+      "radiator": {"min_cost": 3500, "max_cost": 11000, "benchmark_median": 6500},
+      "bonnet_hood": {"min_cost": 4000, "max_cost": 12000, "benchmark_median": 7500},
+      "side_door": {"min_cost": 5000, "max_cost": 15000, "benchmark_median": 9000},
+      "painting_per_panel": {"min_cost": 1500, "max_cost": 4000, "benchmark_median": 2500},
+      "tinkering_labor": {"min_cost": 800, "max_cost": 3500, "benchmark_median": 1800}
+    },
+    "sedan": {
+      "front_bumper": {"min_cost": 4500, "max_cost": 15000, "benchmark_median": 8500},
+      "rear_bumper": {"min_cost": 4000, "max_cost": 14000, "benchmark_median": 7800},
+      "headlight_assembly": {"min_cost": 3500, "max_cost": 12000, "benchmark_median": 6500},
+      "windshield_glass": {"min_cost": 5000, "max_cost": 15000, "benchmark_median": 9000},
+      "radiator": {"min_cost": 5500, "max_cost": 18000, "benchmark_median": 10500},
+      "bonnet_hood": {"min_cost": 7000, "max_cost": 22000, "benchmark_median": 13000},
+      "side_door": {"min_cost": 8000, "max_cost": 24000, "benchmark_median": 14500},
+      "painting_per_panel": {"min_cost": 2500, "max_cost": 6500, "benchmark_median": 4000},
+      "tinkering_labor": {"min_cost": 1500, "max_cost": 5500, "benchmark_median": 3000}
+    },
+    "suv": {
+      "front_bumper": {"min_cost": 6500, "max_cost": 22000, "benchmark_median": 12500},
+      "rear_bumper": {"min_cost": 6000, "max_cost": 20000, "benchmark_median": 11500},
+      "headlight_assembly": {"min_cost": 5000, "max_cost": 22000, "benchmark_median": 11000},
+      "windshield_glass": {"min_cost": 7000, "max_cost": 20000, "benchmark_median": 12000},
+      "radiator": {"min_cost": 8000, "max_cost": 25000, "benchmark_median": 15000},
+      "bonnet_hood": {"min_cost": 9000, "max_cost": 30000, "benchmark_median": 17500},
+      "side_door": {"min_cost": 10000, "max_cost": 32000, "benchmark_median": 18000},
+      "painting_per_panel": {"min_cost": 3500, "max_cost": 8500, "benchmark_median": 5500},
+      "tinkering_labor": {"min_cost": 2000, "max_cost": 7500, "benchmark_median": 4200}
+    },
+    "luxury": {
+      "front_bumper": {"min_cost": 25000, "max_cost": 85000, "benchmark_median": 48000},
+      "rear_bumper": {"min_cost": 22000, "max_cost": 80000, "benchmark_median": 45000},
+      "headlight_assembly": {"min_cost": 30000, "max_cost": 120000, "benchmark_median": 65000},
+      "windshield_glass": {"min_cost": 25000, "max_cost": 75000, "benchmark_median": 42000},
+      "radiator": {"min_cost": 30000, "max_cost": 95000, "benchmark_median": 55000},
+      "bonnet_hood": {"min_cost": 40000, "max_cost": 130000, "benchmark_median": 75000},
+      "side_door": {"min_cost": 45000, "max_cost": 150000, "benchmark_median": 85000},
+      "painting_per_panel": {"min_cost": 8000, "max_cost": 25000, "benchmark_median": 14000},
+      "tinkering_labor": {"min_cost": 5000, "max_cost": 20000, "benchmark_median": 10000}
+    }
+  }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "claim_id": "EVAL-001",
+    "policy_number": "POL-EVAL-001",
+    "vehicle_details": {"make": "Maruti", "model": "Swift", "age_years": 2.0, "cubic_capacity": 1197.0, "segment": "hatchback"},
+    "incident_narrative": "Car hit parking pole causing damage to front bumper.",
+    "uploaded_images": [],
+    "estimate_line_items": [{"part_name": "Front Bumper", "category": "plastic", "claimed_cost": 4500.0}],
+    "customer_history": [],
+    "held_policy_endorsements": ["ZERO_DEP"],
+    "ground_truth_verdict": "APPROVE",
+    "ground_truth_approved_amount": 3500.0
+  },
+  {
+    "claim_id": "EVAL-002",
+    "policy_number": "POL-EVAL-002",
+    "vehicle_details": {"make": "Honda", "model": "City", "age_years": 4.0, "cubic_capacity": 1498.0, "segment": "sedan"},
+    "incident_narrative": "Windshield cracked by flying pebble on highway.",
+    "uploaded_images": [],
+    "estimate_line_items": [{"part_name": "Windshield Glass", "category": "glass", "claimed_cost": 9000.0}],
+    "customer_history": [],
+    "held_policy_endorsements": [],
+    "ground_truth_verdict": "APPROVE_ADJUSTED",
+    "ground_truth_approved_amount": 8000.0
+  },
+  {
+    "claim_id": "EVAL-003",
+    "policy_number": "POL-EVAL-003",
+    "vehicle_details": {"make": "Hyundai", "model": "Creta", "age_years": 1.0, "cubic_capacity": 1497.0, "segment": "suv"},
+    "incident_narrative": "Water entered engine while driving through flooded underpass.",
+    "uploaded_images": [],
+    "estimate_line_items": [{"part_name": "Engine Assembly", "category": "metal", "claimed_cost": 120000.0}],
+    "customer_history": [],
+    "held_policy_endorsements": [],
+    "ground_truth_verdict": "ESCALATE",
+    "ground_truth_approved_amount": 0.0
+  }
+]

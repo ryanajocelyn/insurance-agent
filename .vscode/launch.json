@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Ingest Policies CLI",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/rag/ingest_policies.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "args": ["--docs-dir", "docs/"]
+    },
+    {
+      "name": "Run Evaluation Benchmarks",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/eval/run_eval.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "args": ["--dataset", "src/eval/eval_dataset.json"]
+    },
+    {
+      "name": "Streamlit Web App",
+      "type": "python",
+      "request": "launch",
+      "module": "streamlit",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "args": ["run", "src/app.py"]
+    }
+  ]
+}

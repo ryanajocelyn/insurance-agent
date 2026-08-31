@@ -1,0 +1,3 @@
+"""
+Settlement calculation strategies package.
+"""
