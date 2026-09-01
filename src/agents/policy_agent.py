@@ -1,11 +1,8 @@
-"""
-Policy & Limit Matcher Agent Node Module (ChromaDB RAG).
-"""
-
 from typing import Dict, Any, List
 from pydantic import BaseModel, Field
 from src.rag.retriever import PolicyRetriever
 from src.utils.llm_utils import invoke_gemini_json
+from src.utils.logger import create_log_entry
 
 
 class PolicyMatcherAnalysis(BaseModel):
@@ -32,11 +29,27 @@ def policy_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
     estimate_items = state.get("estimate_line_items", [])
     endorsements = state.get("held_policy_endorsements", [])
     vehicle = state.get("vehicle_details", {})
+    logs = list(state.get("execution_logs", []))
 
     retriever = PolicyRetriever()
 
     query_text = f"{narrative} " + " ".join([item.get("part_name", "") for item in estimate_items])
     retrieved_clauses = retriever.retrieve_relevant_clauses(query=query_text, n_results=4)
+
+    # Format retrieved sources for log provenance
+    retrieved_sources_desc = []
+    for rc in retrieved_clauses:
+        doc_title = rc.get("document_title") or rc.get("source_file", "IRDAI Policy")
+        score = rc.get("similarity_score", 0.0)
+        page = rc.get("page_number", 1)
+        retrieved_sources_desc.append(f"📜 '{doc_title}' (Page {page}, Similarity: {score:.2f})")
+
+    data_sources = [
+        "Vector Database Store: ChromaDB (Collection: 'motor_policy_clauses', Embedding: 'gemini-embedding-001')",
+        f"Retrieved Documents ({len(retrieved_clauses)} matches): {'; '.join(retrieved_sources_desc) if retrieved_sources_desc else 'None'}",
+        f"Active Policy Endorsements / Riders: {endorsements if endorsements else 'None'}",
+        "Model Engine: Google Gemini 1.5 Pro (gemini-3.6-flash)"
+    ]
 
     has_consumables_rider = any(
         r.upper() in ["CONSUMABLES_COVER", "CONSUMABLES"] for r in endorsements
@@ -81,16 +94,46 @@ Evaluation Tasks:
         all_warnings = list(set(warnings + analysis.policy_warning_flags))
         all_non_covered = list(set(non_covered + analysis.non_covered_items))
 
+        summary_text = (
+            f"Retrieved {len(retrieved_clauses)} relevant clauses. "
+            f"Mandatory Citations: {', '.join(analysis.mandatory_citations)}. "
+            f"Warnings: {', '.join(all_warnings) or 'None'}. "
+            f"Excluded Items: {', '.join(all_non_covered) or 'None'}"
+        )
+
+        status_flag = "WARNING" if all_warnings or all_non_covered else "SUCCESS"
+
+        success_log = create_log_entry(
+            agent="Policy & Limit Matcher Agent",
+            step="ChromaDB RAG Retrieval & Policy Coverage Verification",
+            summary=summary_text,
+            data_sources=data_sources,
+            status=status_flag
+        )
+        logs.append(success_log)
+
         return {
             "retrieved_policy_clauses": retrieved_clauses,
             "mandatory_citations": analysis.mandatory_citations,
             "policy_warning_flags": all_warnings,
+            "execution_logs": logs,
         }
 
     except Exception as exc:
         print(f"[POLICY AGENT FALLBACK] RAG synthesis call failed: {exc}")
+        fallback_log = create_log_entry(
+            agent="Policy & Limit Matcher Agent",
+            step="ChromaDB RAG Retrieval & Policy Coverage Verification",
+            summary=f"Policy RAG fallback triggered due to service exception: {exc}",
+            data_sources=data_sources,
+            status="FALLBACK"
+        )
+        logs.append(fallback_log)
+
         return {
             "retrieved_policy_clauses": retrieved_clauses,
             "mandatory_citations": ["IMT Standard Own Damage Section I"],
             "policy_warning_flags": warnings,
+            "execution_logs": logs,
         }
+

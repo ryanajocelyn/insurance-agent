@@ -145,7 +145,12 @@ def render_adjudication_results():
     m3.metric("Depreciation Deduction", f"₹{state.get('deductions_breakdown', {}).get('depreciation', 0.0):,.2f}")
     m4.metric("Compulsory Excess", f"₹{state.get('deductions_breakdown', {}).get('compulsory_deductible', 0.0):,.2f}")
 
-    t1, t2, t3 = st.tabs(["Audit Rationale", "Policy Citations & Warnings", "Agent Trace Findings"])
+    t1, t2, t3, t4 = st.tabs([
+        "Audit Rationale",
+        "Policy Citations & Warnings",
+        "Agent Trace Findings",
+        "📜 Execution Logs & Data Lineage"
+    ])
 
     with t1:
         st.markdown("**Adjudication Rationale:**")
@@ -175,6 +180,41 @@ def render_adjudication_results():
                 "investigation_triggers": state.get("investigation_triggers", []),
             }
         )
+
+    with t4:
+        st.subheader("📋 Step-by-Step Agent Execution & Data Origin Provenance")
+        st.markdown(
+            "Below is the minimal execution log trace showing the order of steps executed by each agent node "
+            "and the exact external data sources, database collections, and statutory schedules queried."
+        )
+
+        logs = state.get("execution_logs", [])
+        if not logs:
+            st.info("No execution logs found in current state.")
+        else:
+            for idx, log in enumerate(logs, 1):
+                status_icon = "🟢" if log.get("status") == "SUCCESS" else ("🟡" if log.get("status") == "WARNING" else "🔴")
+                agent_name = log.get("agent", "Agent")
+                step_title = log.get("step", "Execution Step")
+                timestamp = log.get("timestamp", "")
+                
+                expander_label = f"Step {idx}: {status_icon} [{agent_name}] {step_title} — {timestamp}"
+                
+                with st.expander(expander_label, expanded=(idx == len(logs))):
+                    st.markdown(f"**Agent**: `{agent_name}`")
+                    st.markdown(f"**Step**: `{step_title}`")
+                    st.markdown(f"**Execution Status**: `{log.get('status', 'SUCCESS')}`")
+                    st.markdown(f"**Step Rationale & Summary**:\n> {log.get('summary', '')}")
+                    
+                    st.markdown("---")
+                    st.markdown("##### 📍 Data Sources & Information Provenance:")
+                    sources = log.get("data_sources", [])
+                    if sources:
+                        for src in sources:
+                            st.markdown(f"- 🗂️ `{src}`")
+                    else:
+                        st.caption("No specific external data sources recorded for this step.")
+
 
     st.markdown("---")
     st.subheader("👤 Human-in-the-Loop (HITL) Adjuster Override & Authorization")

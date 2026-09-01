@@ -49,4 +49,6 @@ class ClaimState(TypedDict, total=False):
     approved_amount: float
     deductions_breakdown: Dict[str, float]
     mandatory_citations: List[str]
-    investigation_triggers: List[str]
+    # --- Execution Logs & Data Provenance ---
+    execution_logs: List[Dict[str, Any]]
+

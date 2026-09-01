@@ -1,12 +1,9 @@
-"""
-Cost & History Anomaly Agent Node Module.
-"""
-
 from typing import Dict, Any, List
 from pydantic import BaseModel, Field
 from src.config import config
 from src.utils.file_utils import read_json_file
 from src.utils.llm_utils import invoke_gemini_json
+from src.utils.logger import create_log_entry
 
 
 class AnomalyAnalysis(BaseModel):
@@ -33,15 +30,18 @@ def anomaly_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
     history = state.get("customer_history", [])
     vehicle = state.get("vehicle_details", {})
     narrative = state.get("incident_narrative", "").lower()
+    logs = list(state.get("execution_logs", []))
 
     segment = str(vehicle.get("segment", "hatchback")).lower()
     if segment not in ["hatchback", "sedan", "suv", "luxury"]:
         segment = "hatchback"
 
+    benchmarks_loaded = True
     try:
         matrix_data = read_json_file(config.BENCHMARKS_PATH)
         segment_benchmarks = matrix_data.get("segments", {}).get(segment, {})
     except Exception:
+        benchmarks_loaded = False
         segment_benchmarks = {}
 
     total_claimed = sum(float(item.get("claimed_cost", 0.0)) for item in estimate_items)
@@ -71,6 +71,13 @@ def anomaly_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
     is_third_party = "third party" in narrative or "tp injury" in narrative or "pedestrian" in narrative
     requires_fir = total_claimed >= config.FIR_REQUIRED_LOSS_THRESHOLD or is_third_party
 
+    data_sources = [
+        f"Local Benchmark File: '{config.BENCHMARKS_PATH}' (Segment: '{segment}', Loaded: {benchmarks_loaded})",
+        f"Customer History DB: {len(history)} prior claims in 6-month lookback window",
+        f"Regulatory Rule Thresholds: FIR Required > ₹{config.FIR_REQUIRED_LOSS_THRESHOLD:,.0f} (Requires FIR: {requires_fir})",
+        "Model Engine: Google Gemini 1.5 Pro (gemini-3.6-flash)"
+    ]
+
     prompt = f"""You are an expert Insurance Fraud Auditor & Data Scientist.
 Audit the following claim estimate items and 6-month claim history for cost inflation and recurrence anomalies.
 
@@ -92,16 +99,46 @@ Evaluation Tasks:
             temperature=0.2,
         )
 
+        final_cost_flags = cost_flags if cost_flags else analysis.cost_variance_flags
+        status_flag = "WARNING" if final_cost_flags or analysis.frequency_risk_score > 0.50 else "SUCCESS"
+        summary_text = (
+            f"Frequency Risk Score: {analysis.frequency_risk_score:.2f}. "
+            f"Cost Variance Flags: {len(final_cost_flags)} items. "
+            f"History Anomalies: {', '.join(analysis.history_anomalies) or 'None'}. "
+            f"FIR Required: {requires_fir}"
+        )
+
+        success_log = create_log_entry(
+            agent="Cost & History Anomaly Agent",
+            step="Cost Benchmark Audit & Fraud Velocity Analysis",
+            summary=summary_text,
+            data_sources=data_sources,
+            status=status_flag
+        )
+        logs.append(success_log)
+
         return {
-            "cost_variance_flags": cost_flags if cost_flags else analysis.cost_variance_flags,
+            "cost_variance_flags": final_cost_flags,
             "frequency_risk_score": analysis.frequency_risk_score,
             "history_anomalies": analysis.history_anomalies,
+            "execution_logs": logs,
         }
 
     except Exception as exc:
         print(f"[ANOMALY AGENT FALLBACK] Anomaly synthesis call failed: {exc}")
+        fallback_log = create_log_entry(
+            agent="Cost & History Anomaly Agent",
+            step="Cost Benchmark Audit & Fraud Velocity Analysis",
+            summary=f"Anomaly evaluation fallback triggered due to service exception: {exc}",
+            data_sources=data_sources,
+            status="FALLBACK"
+        )
+        logs.append(fallback_log)
+
         return {
             "cost_variance_flags": cost_flags,
             "frequency_risk_score": 0.3 if len(history) > 1 else 0.1,
             "history_anomalies": ["FALLBACK_EVALUATION"],
+            "execution_logs": logs,
         }
+

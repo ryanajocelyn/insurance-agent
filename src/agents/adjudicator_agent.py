@@ -1,12 +1,9 @@
-"""
-Synthesis & Adjudication Engine Agent Node Module.
-"""
-
 from typing import Dict, Any, List
 from pydantic import BaseModel, Field
 from src.strategies.depreciation_strategy import DepreciationStrategy
 from src.strategies.deductible_strategy import DeductibleStrategy
 from src.utils.llm_utils import invoke_gemini_json
+from src.utils.logger import create_log_entry
 
 
 class SynthesisVerdict(BaseModel):
@@ -38,6 +35,7 @@ def adjudicator_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
     citations = state.get("mandatory_citations", [])
     cost_flags = state.get("cost_variance_flags", [])
     risk_score = state.get("frequency_risk_score", 0.0)
+    logs = list(state.get("execution_logs", []))
 
     total_claimed = sum(float(item.get("claimed_cost", 0.0)) for item in estimate_items)
 
@@ -83,6 +81,15 @@ def adjudicator_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
     else:
         recommended_verdict = "APPROVE"
 
+    data_sources = [
+        "Multimodal Evidence Agent: Photo damage findings & cross-modal consistency",
+        "Policy & Limit Matcher Agent: ChromaDB policy clause citations & coverage warnings",
+        "Cost & History Anomaly Agent: Cost variance benchmarks & claim velocity risk score",
+        f"Statutory IRDAI Depreciation Rules (Depreciation: ₹{dep_deduction:,.2f})",
+        f"India Motor Tariff Deductible Schedule (Compulsory Deductible: ₹{compulsory_deductible:,.2f})",
+        "Model Engine: Google Gemini 1.5 Pro (gemini-3.6-flash)"
+    ]
+
     prompt = f"""You are the Chief Adjudication Arbitrator for Motor Insurance Claims.
 Synthesize the final claim decision based on findings from Evidence, Policy, and Anomaly agents.
 
@@ -115,6 +122,23 @@ Evaluation Tasks:
         final_citations = list(set(citations + synthesis.mandatory_citations))
         final_triggers = list(set(investigation_triggers + synthesis.investigation_triggers))
 
+        status_flag = "WARNING" if final_verdict in ["ESCALATE", "REJECT", "APPROVE_ADJUSTED"] else "SUCCESS"
+        summary_text = (
+            f"Verdict: {final_verdict}. "
+            f"Gross Claimed: ₹{total_claimed:,.2f}, Approved Payout: ₹{approved_payout:,.2f}. "
+            f"Depreciation Deduction: ₹{dep_deduction:,.2f}, Compulsory Excess: ₹{compulsory_deductible:,.2f}. "
+            f"Triggers: {', '.join(final_triggers) or 'None'}"
+        )
+
+        success_log = create_log_entry(
+            agent="Synthesis & Adjudication Agent",
+            step="Multi-Agent Result Convergence & Final Payout Arbitration",
+            summary=summary_text,
+            data_sources=data_sources,
+            status=status_flag
+        )
+        logs.append(success_log)
+
     except Exception as exc:
         print(f"[ADJUDICATOR AGENT FALLBACK] Synthesis LLM call failed: {exc}")
         final_verdict = recommended_verdict
@@ -125,6 +149,15 @@ Evaluation Tasks:
         )
         final_citations = citations
         final_triggers = investigation_triggers
+
+        fallback_log = create_log_entry(
+            agent="Synthesis & Adjudication Agent",
+            step="Multi-Agent Result Convergence & Final Payout Arbitration",
+            summary=f"Adjudicator synthesis fallback triggered: {exc}",
+            data_sources=data_sources,
+            status="FALLBACK"
+        )
+        logs.append(fallback_log)
 
     return {
         "adjudication_verdict": final_verdict,
@@ -137,4 +170,6 @@ Evaluation Tasks:
         },
         "mandatory_citations": final_citations,
         "investigation_triggers": final_triggers,
+        "execution_logs": logs,
     }
+
