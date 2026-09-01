@@ -1,0 +1,204 @@
+[
+  {
+    "scenario_id": "MISP-SCENARIO-01",
+    "title": "MISP Dealer Surveyor Interference & Unapproved Fee Inflation",
+    "description": "Tests retrieval of MISP Guideline 10(g-h) prohibiting automobile dealers from interfering in surveyor appointments or inflating claims revenue with dealer handling fees.",
+    "claim_packet": {
+      "claim_id": "CLM-MISP-2026-001",
+      "policy_number": "POL-MISP-90101",
+      "vehicle_details": {
+        "make": "Hyundai",
+        "model": "Creta SX",
+        "segment": "suv",
+        "age_years": 2.0,
+        "cubic_capacity": 1497.0
+      },
+      "incident_narrative": "Vehicle collided with highway guardrail damaging front bumper and headlight. MISP dealership insisted on appointing their own internal surveyor and added dealer administrative handling charges to the estimate.",
+      "uploaded_images": ["front_bumper_damage.jpg"],
+      "estimate_line_items": [
+        {
+          "part_name": "Front Bumper Assembly",
+          "category": "plastic",
+          "claimed_cost": 8500.0
+        },
+        {
+          "part_name": "Headlight Assembly",
+          "category": "glass",
+          "claimed_cost": 12000.0
+        },
+        {
+          "part_name": "MISP Dealer Surveyor & Admin Fee",
+          "category": "labor",
+          "claimed_cost": 3500.0
+        }
+      ],
+      "customer_history": [],
+      "held_policy_endorsements": ["ZERO_DEP"]
+    },
+    "expected_retrieval_topics": [
+      "Motor Insurance Service Provider",
+      "interfere in the appointment of surveyors",
+      "inflating its revenue",
+      "Code of Conduct"
+    ]
+  },
+  {
+    "scenario_id": "MISP-SCENARIO-02",
+    "title": "Single Insurer Coercion & Lack of Policy Choice at MISP Dealer",
+    "description": "Tests retrieval of MISP Guideline 10(a-b) mandating automobile dealers to offer choices of multiple insurers and disclose comparative premium rates to prospects.",
+    "claim_packet": {
+      "claim_id": "CLM-MISP-2026-002",
+      "policy_number": "POL-MISP-90102",
+      "vehicle_details": {
+        "make": "Maruti Suzuki",
+        "model": "Swift VXi",
+        "segment": "hatchback",
+        "age_years": 1.5,
+        "cubic_capacity": 1197.0
+      },
+      "incident_narrative": "Customer collided with concrete parking pillar. Policy was issued by car dealer who refused to offer alternative insurance quotes or show premium options from multiple insurers during sale.",
+      "uploaded_images": ["rear_bumper_scratch.jpg"],
+      "estimate_line_items": [
+        {
+          "part_name": "Rear Bumper Assembly",
+          "category": "plastic",
+          "claimed_cost": 6000.0
+        },
+        {
+          "part_name": "Rear Panel Paint Labor",
+          "category": "labor",
+          "claimed_cost": 3500.0
+        }
+      ],
+      "customer_history": [],
+      "held_policy_endorsements": ["ZERO_DEP", "CONSUMABLES_COVER"]
+    },
+    "expected_retrieval_topics": [
+      "offer a choice of motor insurance policies of different insurer",
+      "inform the prospect of the premium rates",
+      "Code of Conduct of MISP"
+    ]
+  },
+  {
+    "scenario_id": "MISP-SCENARIO-03",
+    "title": "Dealer Branded Cover Note & Unapproved Custom Add-on Fee",
+    "description": "Tests retrieval of MISP Guideline 10(j) & Chapter IV 14(a) prohibiting cover notes with dealer logos/branding and unfiled custom addon charges.",
+    "claim_packet": {
+      "claim_id": "CLM-MISP-2026-003",
+      "policy_number": "POL-MISP-90103",
+      "vehicle_details": {
+        "make": "Honda",
+        "model": "City VX",
+        "segment": "sedan",
+        "age_years": 3.0,
+        "cubic_capacity": 1498.0
+      },
+      "incident_narrative": "Side impact damage to mirror and windshield from falling tree branch. Cover note issued by dealer bears MISP dealer logo instead of insurer name and includes unapproved dealer custom bodykit rider.",
+      "uploaded_images": [],
+      "estimate_line_items": [
+        {
+          "part_name": "Side Mirror Assembly",
+          "category": "plastic",
+          "claimed_cost": 4500.0
+        },
+        {
+          "part_name": "Windshield Glass",
+          "category": "glass",
+          "claimed_cost": 9500.0
+        },
+        {
+          "part_name": "Dealer Custom Bodykit Protection Rider",
+          "category": "plastic",
+          "claimed_cost": 4200.0
+        }
+      ],
+      "customer_history": [],
+      "held_policy_endorsements": []
+    },
+    "expected_retrieval_topics": [
+      "cover note that carries name or logo or any other symbol, except that of the insurer",
+      "risk factors",
+      "Product filing procedure"
+    ]
+  },
+  {
+    "scenario_id": "MISP-SCENARIO-04",
+    "title": "Electronic Premium Remittance & Section 64VB Compliance Verification",
+    "description": "Tests retrieval of MISP Guideline 15(6) regarding mandatory electronic premium remittance by policyholders/dealers under Section 64VB of Insurance Act 1938.",
+    "claim_packet": {
+      "claim_id": "CLM-MISP-2026-004",
+      "policy_number": "POL-MISP-90104",
+      "vehicle_details": {
+        "make": "Mahindra",
+        "model": "XUV700 AX7",
+        "segment": "suv",
+        "age_years": 1.0,
+        "cubic_capacity": 2198.0
+      },
+      "incident_narrative": "Major head-on collision on express highway causing total front end loss exceeding ₹50,000. Customer paid renewal premium via dealer cash remittance subject to Section 64VB verification.",
+      "uploaded_images": ["front_collision.jpg"],
+      "estimate_line_items": [
+        {
+          "part_name": "Front Radiator Grille Assembly",
+          "category": "plastic",
+          "claimed_cost": 14500.0
+        },
+        {
+          "part_name": "Bonnet Assembly",
+          "category": "metal",
+          "claimed_cost": 32000.0
+        },
+        {
+          "part_name": "Headlight Unit",
+          "category": "glass",
+          "claimed_cost": 18000.0
+        }
+      ],
+      "customer_history": [],
+      "held_policy_endorsements": ["ENGINE_PROTECT"]
+    },
+    "expected_retrieval_topics": [
+      "Remittance of premium",
+      "electronic means to the insurer",
+      "Section 64VB of the Insurance Act"
+    ]
+  },
+  {
+    "scenario_id": "MISP-SCENARIO-05",
+    "title": "Dealer Infrastructure Charge & Multi-Sponsoring Insurer Audit",
+    "description": "Tests retrieval of MISP Guideline 15(5)(d) strictly prohibiting insurers from paying and MISPs from receiving infrastructure, advertising, or documentation fees.",
+    "claim_packet": {
+      "claim_id": "CLM-MISP-2026-005",
+      "policy_number": "POL-MISP-90105",
+      "vehicle_details": {
+        "make": "BMW",
+        "model": "X3 xDrive",
+        "segment": "luxury",
+        "age_years": 4.0,
+        "cubic_capacity": 1995.0
+      },
+      "incident_narrative": "Right front fender dented during parking. Repair estimate submitted by multi-brand dealership includes a separate MISP documentation and infrastructure handling charge.",
+      "uploaded_images": [],
+      "estimate_line_items": [
+        {
+          "part_name": "Front Fender Panel",
+          "category": "metal",
+          "claimed_cost": 45000.0
+        },
+        {
+          "part_name": "MISP Documentation & Infrastructure Charge",
+          "category": "labor",
+          "claimed_cost": 2800.0
+        }
+      ],
+      "customer_history": [],
+      "held_policy_endorsements": ["ZERO_DEP"]
+    },
+    "expected_retrieval_topics": [
+      "infrastructure expenses",
+      "advertising expenses",
+      "documentation charges",
+      "any other payment by whatever name called"
+    ]
+  }
+]

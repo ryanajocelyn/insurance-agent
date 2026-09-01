@@ -6,7 +6,8 @@ state, evidence analysis, RAG policy matches, anomaly scores, and synthesis deci
 across parallel agent nodes.
 """
 
-from typing import TypedDict, List, Dict, Any, Optional
+import operator
+from typing import TypedDict, List, Dict, Any, Optional, Annotated
 
 
 class ClaimState(TypedDict, total=False):
@@ -50,5 +51,6 @@ class ClaimState(TypedDict, total=False):
     deductions_breakdown: Dict[str, float]
     mandatory_citations: List[str]
     # --- Execution Logs & Data Provenance ---
-    execution_logs: List[Dict[str, Any]]
+    execution_logs: Annotated[List[Dict[str, Any]], operator.add]
+
 

@@ -35,7 +35,6 @@ def adjudicator_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
     citations = state.get("mandatory_citations", [])
     cost_flags = state.get("cost_variance_flags", [])
     risk_score = state.get("frequency_risk_score", 0.0)
-    logs = list(state.get("execution_logs", []))
 
     total_claimed = sum(float(item.get("claimed_cost", 0.0)) for item in estimate_items)
 
@@ -137,7 +136,20 @@ Evaluation Tasks:
             data_sources=data_sources,
             status=status_flag
         )
-        logs.append(success_log)
+
+        return {
+            "adjudication_verdict": final_verdict,
+            "adjudication_rationale": final_rationale,
+            "claimed_amount": round(total_claimed, 2),
+            "approved_amount": round(approved_payout, 2),
+            "deductions_breakdown": {
+                "depreciation": round(dep_deduction, 2),
+                "compulsory_deductible": round(compulsory_deductible, 2),
+            },
+            "mandatory_citations": final_citations,
+            "investigation_triggers": final_triggers,
+            "execution_logs": [success_log],
+        }
 
     except Exception as exc:
         print(f"[ADJUDICATOR AGENT FALLBACK] Synthesis LLM call failed: {exc}")
@@ -157,19 +169,17 @@ Evaluation Tasks:
             data_sources=data_sources,
             status="FALLBACK"
         )
-        logs.append(fallback_log)
 
-    return {
-        "adjudication_verdict": final_verdict,
-        "adjudication_rationale": final_rationale,
-        "claimed_amount": round(total_claimed, 2),
-        "approved_amount": round(approved_payout, 2),
-        "deductions_breakdown": {
-            "depreciation": round(dep_deduction, 2),
-            "compulsory_deductible": round(compulsory_deductible, 2),
-        },
-        "mandatory_citations": final_citations,
-        "investigation_triggers": final_triggers,
-        "execution_logs": logs,
-    }
-
+        return {
+            "adjudication_verdict": final_verdict,
+            "adjudication_rationale": final_rationale,
+            "claimed_amount": round(total_claimed, 2),
+            "approved_amount": round(approved_payout, 2),
+            "deductions_breakdown": {
+                "depreciation": round(dep_deduction, 2),
+                "compulsory_deductible": round(compulsory_deductible, 2),
+            },
+            "mandatory_citations": final_citations,
+            "investigation_triggers": final_triggers,
+            "execution_logs": [fallback_log],
+        }

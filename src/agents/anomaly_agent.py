@@ -30,7 +30,6 @@ def anomaly_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
     history = state.get("customer_history", [])
     vehicle = state.get("vehicle_details", {})
     narrative = state.get("incident_narrative", "").lower()
-    logs = list(state.get("execution_logs", []))
 
     segment = str(vehicle.get("segment", "hatchback")).lower()
     if segment not in ["hatchback", "sedan", "suv", "luxury"]:
@@ -115,13 +114,12 @@ Evaluation Tasks:
             data_sources=data_sources,
             status=status_flag
         )
-        logs.append(success_log)
 
         return {
             "cost_variance_flags": final_cost_flags,
             "frequency_risk_score": analysis.frequency_risk_score,
             "history_anomalies": analysis.history_anomalies,
-            "execution_logs": logs,
+            "execution_logs": [success_log],
         }
 
     except Exception as exc:
@@ -133,12 +131,11 @@ Evaluation Tasks:
             data_sources=data_sources,
             status="FALLBACK"
         )
-        logs.append(fallback_log)
 
         return {
             "cost_variance_flags": cost_flags,
             "frequency_risk_score": 0.3 if len(history) > 1 else 0.1,
             "history_anomalies": ["FALLBACK_EVALUATION"],
-            "execution_logs": logs,
+            "execution_logs": [fallback_log],
         }
 

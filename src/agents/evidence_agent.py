@@ -34,7 +34,6 @@ def evidence_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
     narrative = state.get("incident_narrative", "")
     images = state.get("uploaded_images", [])
     estimate_items = state.get("estimate_line_items", [])
-    logs = list(state.get("execution_logs", []))
 
     if not images:
         no_img_log = create_log_entry(
@@ -47,7 +46,6 @@ def evidence_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
             ],
             status="WARNING"
         )
-        logs.append(no_img_log)
 
         return {
             "vision_findings": {
@@ -57,7 +55,7 @@ def evidence_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
             "cross_modal_consistency": False,
             "consistency_notes": "No photographic evidence was provided with the claim packet.",
             "missing_evidence_flags": ["MANDATORY_DAMAGE_PHOTO_MISSING"],
-            "execution_logs": logs,
+            "execution_logs": [no_img_log],
         }
 
     image_payloads: List[Dict[str, str]] = []
@@ -116,7 +114,6 @@ Evaluation Tasks:
             data_sources=data_sources,
             status=status_flag
         )
-        logs.append(success_log)
 
         return {
             "vision_findings": {
@@ -126,7 +123,7 @@ Evaluation Tasks:
             "cross_modal_consistency": analysis.cross_modal_consistency,
             "consistency_notes": analysis.consistency_notes,
             "missing_evidence_flags": analysis.missing_evidence_flags,
-            "execution_logs": logs,
+            "execution_logs": [success_log],
         }
 
     except Exception as exc:
@@ -138,7 +135,6 @@ Evaluation Tasks:
             data_sources=data_sources,
             status="FALLBACK"
         )
-        logs.append(fallback_log)
 
         return {
             "vision_findings": {
@@ -148,6 +144,6 @@ Evaluation Tasks:
             "cross_modal_consistency": True,
             "consistency_notes": f"Fallback mode active due to vision service timeout: {exc}",
             "missing_evidence_flags": ["VISION_AGENT_TIMEOUT"],
-            "execution_logs": logs,
+            "execution_logs": [fallback_log],
         }
 

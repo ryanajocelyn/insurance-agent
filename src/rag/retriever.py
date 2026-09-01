@@ -41,4 +41,20 @@ class PolicyRetriever:
                     }
                 )
 
+        # Fallback: If threshold filtering yields no clauses but raw matches exist in ChromaDB,
+        # return the top raw matches so the workflow receives stored regulatory context.
+        if not filtered_clauses and raw_matches:
+            for match in raw_matches:
+                filtered_clauses.append(
+                    {
+                        "clause_text": match["content"],
+                        "source_file": match["metadata"].get("source_file", "IRDAI Policy Document"),
+                        "document_title": match["metadata"].get("document_title", ""),
+                        "category": match["metadata"].get("category", ""),
+                        "page_number": match["metadata"].get("page_number", 1),
+                        "similarity_score": match.get("similarity_score", 0.0),
+                    }
+                )
+
         return filtered_clauses
+

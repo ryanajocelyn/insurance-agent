@@ -64,13 +64,26 @@ def run_claim_adjudication(initial_state: ClaimState) -> ClaimState:
     Returns:
         ClaimState: Final state containing adjudication verdict, rationale, and approved payout metrics.
     """
+    claim_id = initial_state.get("claim_id", "CLM-UNKNOWN")
+    print(f"\n========================================================", flush=True)
+    print(f"[{time.strftime('%H:%M:%S')}] [LANGGRAPH START] Executing Multi-Agent Adjudication Workflow for '{claim_id}'...", flush=True)
+    print(f"========================================================", flush=True)
+
     graph = build_adjudication_graph()
 
     start_time = time.time()
     final_state: ClaimState = graph.invoke(initial_state)
     latency = time.time() - start_time
 
+    verdict = final_state.get("adjudication_verdict", "UNKNOWN")
+    logs_count = len(final_state.get("execution_logs", []))
+    print(f"\n========================================================", flush=True)
+    print(f"[{time.strftime('%H:%M:%S')}] [LANGGRAPH END] Workflow Completed in {latency:.2f}s | Verdict: {verdict} | Step Logs: {logs_count}", flush=True)
+    print(f"========================================================\n", flush=True)
+
     # Log run to MLflow observability tracer
     MLflowTracer.log_claim_adjudication_run(final_state, execution_time_seconds=latency)
 
     return final_state
+
+

@@ -29,7 +29,6 @@ def policy_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
     estimate_items = state.get("estimate_line_items", [])
     endorsements = state.get("held_policy_endorsements", [])
     vehicle = state.get("vehicle_details", {})
-    logs = list(state.get("execution_logs", []))
 
     retriever = PolicyRetriever()
 
@@ -42,7 +41,7 @@ def policy_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
         doc_title = rc.get("document_title") or rc.get("source_file", "IRDAI Policy")
         score = rc.get("similarity_score", 0.0)
         page = rc.get("page_number", 1)
-        retrieved_sources_desc.append(f"📜 '{doc_title}' (Page {page}, Similarity: {score:.2f})")
+        retrieved_sources_desc.append(f"[DOC] '{doc_title}' (Page {page}, Similarity: {score:.2f})")
 
     data_sources = [
         "Vector Database Store: ChromaDB (Collection: 'motor_policy_clauses', Embedding: 'gemini-embedding-001')",
@@ -110,13 +109,12 @@ Evaluation Tasks:
             data_sources=data_sources,
             status=status_flag
         )
-        logs.append(success_log)
 
         return {
             "retrieved_policy_clauses": retrieved_clauses,
             "mandatory_citations": analysis.mandatory_citations,
             "policy_warning_flags": all_warnings,
-            "execution_logs": logs,
+            "execution_logs": [success_log],
         }
 
     except Exception as exc:
@@ -128,12 +126,11 @@ Evaluation Tasks:
             data_sources=data_sources,
             status="FALLBACK"
         )
-        logs.append(fallback_log)
 
         return {
             "retrieved_policy_clauses": retrieved_clauses,
             "mandatory_citations": ["IMT Standard Own Damage Section I"],
             "policy_warning_flags": warnings,
-            "execution_logs": logs,
+            "execution_logs": [fallback_log],
         }
 
